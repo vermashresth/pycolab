@@ -1,6 +1,6 @@
 # coding=utf8
 
-# Copyright 2017 the pycolab Authors
+# Copyright 2018 the pycolab Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -618,10 +618,10 @@ class Engine(object):
     """
     if not self._showtime:
       raise RuntimeError('play() cannot be called until the Engine is placed '
-                         'in "play mode" via the its_showtime() method')
+                         'in "play mode" via the its_showtime() method.')
     if self._game_over:
       raise RuntimeError('play() was called after the episode handled by this '
-                         'Engine has terminated')
+                         'Engine has terminated.')
 
     # Update Backdrop and all Sprites and Drapes.
     self._update_and_render(actions)
@@ -905,7 +905,8 @@ class Palette(object):
       bang='!', exclamation='!', exclamation_point='!', exclamation_pt='!',
       at='@',
       # regrettably, £ is not ASCII.
-      hash='#', octothorpe='#', number_sign='#', pigpen='#', pound='#',
+      hash='#', hashtag='#', octothorpe='#', number_sign='#', pigpen='#',
+      pound='#',
       dollar='$', dollar_sign='$', buck='$', mammon='$',
       percent='%', percent_sign='%', food='%',
       carat='^', circumflex='^', trap='^',
@@ -959,6 +960,14 @@ class Palette(object):
 
   def __getitem__(self, key):
     return self._actual_lookup(key, IndexError)
+
+  def __getstate__(self):
+    # Because we define __getattr__, we also supply __getstate__ and
+    # __setstate__ to avoid recursion during some pickling and copy operations.
+    return self._legal_characters
+
+  def __setstate__(self, state):
+    self._legal_characters = set(state)
 
   def __contains__(self, key):
     # It is intentional, but probably not so important (as long as there are no
